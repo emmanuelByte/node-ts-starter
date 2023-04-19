@@ -2,16 +2,10 @@ import { Router } from 'express';
 
 import { authenticate } from '../middlewares/authMiddleware';
 import userValidation from '../validation/userValidation';
-import UserController from '../controllers/userController';
-import UserService from '../services/userService';
-import { MongooseUserRepository } from '../infra/repository/userRepository';
-
+import userController from '../controllers/userController';
 const router = Router();
-
-const userController = new UserController(new UserService(new MongooseUserRepository()));
-router.post('/register', userController.register);
-router.post('/login', userValidation.UserLoginValidation, userController.login);
-
+router.post('/register', userValidation.loginValidation, userController.register);
+router.post('/login', userValidation.loginValidation, userController.login);
 // Protect the routes below with the authenticate middleware
 router.use(authenticate);
 

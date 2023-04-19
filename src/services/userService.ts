@@ -6,7 +6,7 @@ import { User, UserRepository } from '../domain/User';
 
 export default class UserService {
   constructor(private userRepository: UserRepository) {}
-  async registerUser(userData: IUser): Promise<User> {
+  async registerUser(userData: Pick<IUser, 'email' | 'password'>): Promise<User> {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     const user = await this.userRepository.create({
       ...userData,

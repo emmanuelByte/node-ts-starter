@@ -1,22 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { IUser } from '../infra/db/mongoose/models/User';
 import { BadRequestError } from '../helpers/error';
 import { sendResponse } from '../helpers/response';
 import UserService from '../services/userService';
-export default class UserController {
+import { MongooseUserRepository } from '../infra/repository/userRepository';
+import routeWrapper from '../helpers/routeWrapper';
+class UserController {
   constructor(private userService: UserService) {}
-  async register(req: Request, res: Response): Promise<Response> {
+  async register(req: Request, res: Response, next?: NextFunction): Promise<Response> {
     try {
-      const userData: IUser = req.body;
+      const userData: Pick<IUser, 'email' | 'password'> = req.body;
       const user = await this.userService.registerUser(userData);
-      return sendResponse(res, 201, 'User created successfully', user);
+      return sendResponse({ res, statusCode: 201, message: 'User registered successfully', data: user });
     } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
 
-  async login(req: Request, res: Response): Promise<Response> {
+  async login(req: Request, res: Response, next?: NextFunction): Promise<Response> {
     try {
       const { email, password } = req.body;
       const user = await this.userService.login({ email, password });
@@ -31,3 +33,8 @@ export default class UserController {
     }
   }
 }
+const userRepository = new MongooseUserRepository();
+const userService = new UserService(userRepository);
+const userController = routeWrapper(new UserController(userService));
+
+export default userController;
