@@ -1,11 +1,6 @@
-import { Response } from "express";
+import { Response } from 'express';
 
-export const sendResponse = (
-  res: Response,
-  statusCode: number,
-  message: string,
-  data: any = null
-): Response => {
+export const sendResponse = (res: Response, statusCode: number, message: string, data: unknown = null): Response => {
   const response = {
     message,
     data,

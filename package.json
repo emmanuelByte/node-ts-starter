@@ -10,16 +10,12 @@
     "build": "tsc",
     "test": "mocha -r ts-node/register --recursive test --exit",
     "lint": "eslint src/**/*.ts",
-    "format": "eslint src/**/*.ts --fix"
+    "format": "eslint src/**/*.ts --fix",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn lint"
-    }
-  },
   "dependencies": {
     "awilix": "^8.0.1",
     "bcrypt": "^5.1.0",
@@ -58,6 +54,7 @@
     "sinon": "^15.0.3",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "husky": "^8.0.0"
   }
 }

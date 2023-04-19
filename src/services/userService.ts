@@ -1,8 +1,8 @@
-import UserModel, { IUser } from "../infra/db/mongoose/models/User";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import config from "../config/config";
-import { User, UserRepository } from "../domain/User";
+import UserModel, { IUser } from '../infra/db/mongoose/models/User';
+import bcrypt from 'bcrypt';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import config from '../config/config';
+import { User, UserRepository } from '../domain/User';
 
 export default class UserService {
   constructor(private userRepository: UserRepository) {}
@@ -14,7 +14,7 @@ export default class UserService {
     });
     return user;
   }
-  async login(data: Pick<IUser, "email" | "password">): Promise<IUser | null> {
+  async login(data: Pick<IUser, 'email' | 'password'>): Promise<IUser | null> {
     const { email, password } = data;
     const user = await UserModel.findOne({ email });
     if (!user) return null;
@@ -34,7 +34,7 @@ export default class UserService {
       expiresIn: config.jwt.expiresIn,
     });
   }
-  async verifyToken(token: string): Promise<any> {
+  async verifyToken(token: string): Promise<string | JwtPayload | undefined> {
     return new Promise((resolve, reject) => {
       jwt.verify(token, config.jwt.secret, (err, decoded) => {
         if (err) {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
 import { IUser } from '../infra/db/mongoose/models/User';
 import { BadRequestError } from '../helpers/error';
@@ -22,6 +23,7 @@ export default class UserController {
       if (!user) {
         throw new BadRequestError('Invalid email or password');
       }
+
       const token = this.userService.generateToken(user);
       return sendResponse(res, 200, 'Logged in successfully', { token });
     } catch (error: any) {

@@ -1,12 +1,10 @@
-import { Request, Response, NextFunction } from "express";
-import Joi from "joi";
-import { BadRequestError } from "../helpers/error";
-type ValidationSource = "body" | "query" | "params";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Request, Response, NextFunction } from 'express';
+import Joi from 'joi';
+import { BadRequestError } from '../helpers/error';
+type ValidationSource = 'body' | 'query' | 'params';
 
-const validate = (
-  schema: Joi.ObjectSchema<any>,
-  source: ValidationSource = "body"
-) => {
+const validate = (schema: Joi.ObjectSchema<any>, source: ValidationSource = 'body') => {
   return (req: Request, res: Response, next: NextFunction) => {
     const input = req[source];
     const { error } = schema.validate(input);
