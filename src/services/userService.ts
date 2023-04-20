@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IUser, REGISTRATION_STATUS } from '../infra/db/mongoose/models/User';
 import bcrypt from 'bcrypt';
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -15,8 +16,8 @@ export default class UserService {
   static async registerUser(req: Request, res: Response, next: NextFunction): Promise<IUser | void> {
     try {
       const userData = req.body as Pick<IUser, 'email' | 'password'>;
-      const unHashPassword = userData.password;
-      const password = await bcrypt.hash(unHashPassword!, 10);
+      const unHashPassword = userData.password as string;
+      const password = await bcrypt.hash(unHashPassword, 10);
       return await UserRepository.create({ ...userData, password });
     } catch (err: any) {
       // console.log(err);
@@ -26,9 +27,9 @@ export default class UserService {
   static async login(req: Request, res: Response, next: NextFunction): Promise<IUser | undefined> {
     const data: Pick<IUser, 'email' | 'password'> = req.body;
     try {
-      const { email, password } = data;
+      const { email, password } = data as { email: string; password: string };
       const user = (await UserRepository.findByEmail(email)) as IUser;
-      const isPasswordValid = await bcrypt.compare(password!, user.password!);
+      const isPasswordValid = await bcrypt.compare(password, user?.password as string);
       if (!isPasswordValid) throw new BadRequestError('Invalid Password');
       return user;
     } catch (err: any) {
@@ -65,8 +66,7 @@ export default class UserService {
   }
   static async completeRegistration(req: Request, res: Response, next: NextFunction): Promise<IBusiness | undefined> {
     try {
-      const user = req.user!;
-
+      const user = req.user as IUser;
       const { firstName, lastName, phoneNumber, businessName, address, sector } = req.body;
       if (user.registrationStatus !== REGISTRATION_STATUS.VERIFY) {
         if (user.registrationStatus === REGISTRATION_STATUS.SIGN_UP) {
@@ -90,7 +90,7 @@ export default class UserService {
   }
   static async createPin(req: Request, res: Response, next: NextFunction): Promise<IUser | undefined> {
     try {
-      const user = req.user!;
+      const user = req.user as IUser;
       const { code } = req.body;
       if (user.registrationStatus === REGISTRATION_STATUS.PIN) {
         throw next(new BadRequestError('PIN code already created'));
@@ -106,12 +106,12 @@ export default class UserService {
   }
   static async updatePin(req: Request, res: Response, next: NextFunction): Promise<IUser | undefined> {
     try {
-      const user = req.user!;
+      const user = req.user as IUser;
       const { code, password } = req.body;
       if (user.registrationStatus !== REGISTRATION_STATUS.PIN) {
         throw next(new BadRequestError('PIN code not yet created'));
       }
-      const isPasswordValid = await bcrypt.compare(password, user.password!);
+      const isPasswordValid = await bcrypt.compare(password, user.password as string);
       if (!isPasswordValid) throw new BadRequestError('Invalid Password');
       const hashCode = await bcrypt.hash(code, 10);
 
@@ -126,7 +126,7 @@ export default class UserService {
   }
   static async verifyPin(req: Request, res: Response, next: NextFunction): Promise<IUser | undefined> {
     try {
-      const user = req.user!;
+      const user = req.user as IUser;
       const { code } = req.body;
       if (user.registrationStatus !== REGISTRATION_STATUS.PIN) {
         throw next(new BadRequestError('PIN code not yet created'));
@@ -142,7 +142,7 @@ export default class UserService {
   }
   static async getProfile(req: Request, res: Response, next: NextFunction): Promise<IUser | undefined> {
     try {
-      const user = req.user!;
+      const user = req.user as IUser;
       return user;
     } catch (err: any) {
       throw next(new BadRequestError(err.message));
