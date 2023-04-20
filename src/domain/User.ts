@@ -6,7 +6,7 @@ export interface User {
 }
 
 export interface UserRepository {
-  create(user: Omit<User, "id">): Promise<User>;
+  create(user: Omit<User, 'id'>): Promise<User>;
   findById(id: string): Promise<User | null>;
   findByEmail(email: string): Promise<User | null>;
 }

@@ -13,6 +13,7 @@ import { connect } from './infra/db/mongoose/models';
 import { configureContainer } from './config/container';
 import UserService from './services/userService';
 import UserController from './controllers/userController';
+import notFoundHandler from './middlewares/notFoundHandler';
 
 const app: Application = express();
 const container = configureContainer();
@@ -32,6 +33,8 @@ app.use((req, _, next) => {
 
 // Use the user routes
 app.use('/v1/users', userRoutes);
+
+app.use(notFoundHandler);
 
 // Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

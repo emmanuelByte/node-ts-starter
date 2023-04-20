@@ -1,40 +1,126 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from 'express';
 import { IUser } from '../infra/db/mongoose/models/User';
-import { BadRequestError } from '../helpers/error';
 import { sendResponse } from '../helpers/response';
 import UserService from '../services/userService';
-import { MongooseUserRepository } from '../infra/repository/userRepository';
-import routeWrapper from '../helpers/routeWrapper';
+import { StatusCodes } from 'http-status-codes';
 class UserController {
-  constructor(private userService: UserService) {}
-  async register(req: Request, res: Response, next?: NextFunction): Promise<Response> {
+  static async register(req: Request, res: Response, next: NextFunction): Promise<Response | undefined> {
     try {
-      const userData: Pick<IUser, 'email' | 'password'> = req.body;
-      const user = await this.userService.registerUser(userData);
-      return sendResponse({ res, statusCode: 201, message: 'User registered successfully', data: user });
+      const user = await UserService.registerUser(req, res, next);
+      return sendResponse({
+        res,
+        statusCode: StatusCodes.CREATED,
+        message: 'User registered successfully',
+        data: user,
+      });
     } catch (error: any) {
-      throw new BadRequestError(error.message);
+      // console.log(error);
     }
   }
 
-  async login(req: Request, res: Response, next?: NextFunction): Promise<Response> {
+  static async login(req: Request, res: Response, next: NextFunction): Promise<Response | undefined> {
     try {
-      const { email, password } = req.body;
-      const user = await this.userService.login({ email, password });
-      if (!user) {
-        throw new BadRequestError('Invalid email or password');
-      }
-
-      const token = this.userService.generateToken(user);
-      return sendResponse(res, 200, 'Logged in successfully', { token });
+      const user = (await UserService.login(req, res, next)) as IUser;
+      const token = UserService.generateToken(user);
+      return sendResponse({
+        res,
+        statusCode: StatusCodes.OK,
+        message: 'User logged in successfully',
+        data: { token, ...user, password: undefined },
+      });
     } catch (error: any) {
-      throw new BadRequestError(error.message);
+      // console.log(error);
+    }
+  }
+  static async sendVerificationEmail(req: Request, res: Response, next: NextFunction): Promise<Response | undefined> {
+    try {
+      await UserService.sendVerificationEmail(req, res, next);
+      return sendResponse({
+        res,
+        statusCode: StatusCodes.OK,
+        message: 'verification email sent successfully',
+      });
+    } catch (error) {
+      // console.log(error);
+    }
+  }
+  static async verifyEmail(req: Request, res: Response, next: NextFunction): Promise<Response | undefined> {
+    try {
+      await UserService.verifyEmail(req, res, next);
+      return sendResponse({
+        res,
+        statusCode: StatusCodes.OK,
+        message: 'User verified successfully',
+      });
+    } catch (error) {
+      // console.log(error);
+    }
+  }
+  static async getProfile(req: Request, res: Response, next: NextFunction): Promise<Response | undefined> {
+    try {
+      const user = await UserService.getProfile(req, res, next);
+      return sendResponse({
+        res,
+        statusCode: StatusCodes.OK,
+        message: 'User profile fetched',
+        data: user,
+      });
+    } catch (error) {
+      // console.log(error);
+    }
+  }
+  static async completeRegistration(req: Request, res: Response, next: NextFunction): Promise<Response | undefined> {
+    try {
+      const business = await UserService.completeRegistration(req, res, next);
+      return sendResponse({
+        res,
+        statusCode: StatusCodes.CREATED,
+        message: 'Registration completed successfully',
+        data: business,
+      });
+    } catch (error: any) {
+      // console.log(error);
+    }
+  }
+  static async createPin(req: Request, res: Response, next: NextFunction): Promise<Response | undefined> {
+    try {
+      const pin = await UserService.createPin(req, res, next);
+      return sendResponse({
+        res,
+        statusCode: StatusCodes.CREATED,
+        message: 'Created Pin successfully',
+        data: pin,
+      });
+    } catch (error: any) {
+      // console.log(error);
+    }
+  }
+  static async updatePin(req: Request, res: Response, next: NextFunction): Promise<Response | undefined> {
+    try {
+      const pin = await UserService.updatePin(req, res, next);
+      return sendResponse({
+        res,
+        statusCode: StatusCodes.CREATED,
+        message: 'Updated Pin successfully',
+        data: pin,
+      });
+    } catch (error: any) {
+      // console.log(error);
+    }
+  }
+  static async verifyPin(req: Request, res: Response, next: NextFunction): Promise<Response | undefined> {
+    try {
+      const pin = await UserService.verifyPin(req, res, next);
+      return sendResponse({
+        res,
+        statusCode: StatusCodes.CREATED,
+        message: 'Verified Pin successful',
+        data: pin,
+      });
+    } catch (error: any) {
+      // console.log(error);
     }
   }
 }
-const userRepository = new MongooseUserRepository();
-const userService = new UserService(userRepository);
-const userController = routeWrapper(new UserController(userService));
-
-export default userController;
+export default UserController;
