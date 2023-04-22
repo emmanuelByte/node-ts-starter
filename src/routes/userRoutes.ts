@@ -10,6 +10,9 @@ router.post('/register', userValidation.loginValidation, userController.register
 router.post('/login', userValidation.loginValidation, userController.login);
 router.post('/sendVerificationEmail', userValidation.verificationEmailValidation, userController.sendVerificationEmail);
 router.post('/verifyEmail', userValidation.verifyEmailValidation, userController.verifyEmail);
+router.post('/sendForgotPassword', userValidation.verificationEmailValidation, userController.sendForgotPassword);
+router.post('/verifyForgotPassword', userValidation.verifyForgotEmailValidation, userController.verifyForgotPassword);
+
 // Protect the routes below with the authenticate middleware
 router.use(authenticate);
 // POST ROUTES

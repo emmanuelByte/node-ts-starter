@@ -64,6 +64,37 @@ export default class UserService {
       throw next(new BadRequestError(err.message));
     }
   }
+  static async sendForgotPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { email } = req.body;
+
+      const user = (await UserRepository.findByEmail(email)) as IUser;
+
+      const code = generateOTP();
+      await UserRepository.update(user._id, { resetPassword: { code } });
+      // TODO: send email
+    } catch (err: any) {
+      throw next(new BadRequestError(err.message));
+    }
+  }
+  static async verifyForgotPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { code, email, newPassword } = req.body;
+      const user = (await UserRepository.findByEmail(email)) as IUser;
+
+      if (!user.resetPassword?.code) throw next(new BadRequestError('Send Reset Password email first'));
+      if (code != user.resetPassword?.code) throw new BadRequestError('Incorrect Code');
+      const hashPassword = await bcrypt.hash(newPassword, 10);
+
+      await UserRepository.update(user._id, {
+        resetPassword: {},
+        password: hashPassword,
+      });
+    } catch (err: any) {
+      throw next(new BadRequestError(err.message));
+    }
+  }
+
   static async completeRegistration(req: Request, res: Response, next: NextFunction): Promise<IBusiness | undefined> {
     try {
       const user = req.user as IUser;

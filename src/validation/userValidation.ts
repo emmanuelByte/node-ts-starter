@@ -33,6 +33,30 @@ const verifyEmailSchema = Joi.object({
   }),
 });
 
+const verifyForgotEmailSchema = Joi.object({
+  email: Joi.string().email().min(3).max(30).required().messages({
+    'string.email': 'Email must be a valid email address.',
+    'string.min': 'Email must be at least 3 characters long.',
+    'string.max': 'Email must be at most 30 characters long.',
+    'any.required': 'Email is required.',
+  }),
+  // code property 4 digit number
+  code: Joi.number().integer().min(1000).max(9999).required().messages({
+    'number.base': 'Code must be a number.',
+    'number.integer': 'Code must be an integer.',
+    'number.min': 'Code must be at least 1000.',
+    'number.max': 'Code must be at most 9999.',
+    'any.required': 'Code is required.',
+  }),
+  password: Joi.string()
+    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
+    .required()
+    .messages({
+      'string.pattern.base':
+        'Password must have at least 8 characters, including lower case, upper case, number, and special character.',
+    }),
+});
+
 const verificationEmailSchema = Joi.object({
   email: Joi.string().email().min(3).max(30).required().messages({
     'string.email': 'Email must be a valid email address.',
@@ -97,4 +121,5 @@ export default {
   completeRegistrationValidation: validate(completeRegistrationSchema),
   createPinValidation: validate(createPinSchema),
   updatePinValidation: validate(updatePinSchema),
+  verifyForgotEmailValidation: validate(verifyForgotEmailSchema),
 };

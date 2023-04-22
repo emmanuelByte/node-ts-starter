@@ -4259,12 +4259,13 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.2.4.tgz#eca284f75d2965079309dc0ad9255abb2ebc1632"
   integrity sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==
 
-list_end_points@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/list_end_points/-/list_end_points-1.0.4.tgz#b1d94eb8efb2babe9f27dab8671e3ce68a1b605f"
-  integrity sha512-y/DkgoKx6NFoi+nhxtPWHCz1oNZBet6yoYYHHWYm8PMSsbwrW1E9W3GOg5b+EKWxIpHECFc7KBBrRksYt5sBzQ==
+list_end_points@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/list_end_points/-/list_end_points-2.0.2.tgz#15a98a3ce7b7fc6292ed103df1260757bfdb529b"
+  integrity sha512-Eay/Pt9MSY4rvRsXgK1mz+W7bTukmxGq2Yym9z9B1W1M5duvnsw0VTRm4gKC6CMDpe26ov05FmDJEJ13s9eXeA==
   dependencies:
     colors "^1.4.0"
+    express "^4.18.2"
 
 locate-path@^5.0.0:
   version "5.0.0"

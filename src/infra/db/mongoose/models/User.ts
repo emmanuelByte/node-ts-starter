@@ -18,8 +18,7 @@ export interface IUser extends Document {
     isVerified: boolean;
   };
   resetPassword?: {
-    code: string;
-    isReset: boolean;
+    code?: string;
   };
   registrationStatus: REGISTRATION_STATUS;
 }

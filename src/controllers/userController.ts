@@ -57,6 +57,30 @@ class UserController {
       // console.log(error);
     }
   }
+  static async sendForgotPassword(req: Request, res: Response, next: NextFunction): Promise<Response | undefined> {
+    try {
+      await UserService.sendForgotPassword(req, res, next);
+      return sendResponse({
+        res,
+        statusCode: StatusCodes.OK,
+        message: 'reset password code  sent successfully',
+      });
+    } catch (error) {
+      // console.log(error);
+    }
+  }
+  static async verifyForgotPassword(req: Request, res: Response, next: NextFunction): Promise<Response | undefined> {
+    try {
+      await UserService.verifyForgotPassword(req, res, next);
+      return sendResponse({
+        res,
+        statusCode: StatusCodes.OK,
+        message: 'Password Reset successfully',
+      });
+    } catch (error) {
+      // console.log(error);
+    }
+  }
   static async getProfile(req: Request, res: Response, next: NextFunction): Promise<Response | undefined> {
     try {
       const user = await UserService.getProfile(req, res, next);
