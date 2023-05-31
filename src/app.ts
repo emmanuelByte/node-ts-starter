@@ -1,4 +1,4 @@
-import express, { Application, Request, Response, NextFunction } from 'express';
+import express, { Application, Request, Response } from 'express';
 import 'reflect-metadata';
 import { json, urlencoded } from 'body-parser';
 import morgan from 'morgan';
@@ -9,11 +9,10 @@ import listEndPoints from 'list_end_points';
 import { CustomError } from './helpers/error';
 import { sendResponse } from './helpers/response';
 import { connect } from './infra/db/mongoose/models';
-import { configureContainer } from './config/container';
+
 import notFoundHandler from './middlewares/notFoundHandler';
 
 const app: Application = express();
-const container = configureContainer();
 
 // Connect to MongoDB
 connect();
@@ -30,7 +29,7 @@ app.use('/v1/users', userRoutes);
 app.use(notFoundHandler);
 
 // Error handling middleware
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, req: Request, res: Response) => {
   if (err instanceof CustomError) {
     return sendResponse({
       res,

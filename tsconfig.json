@@ -8,7 +8,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/config/send-sms.js"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }
 

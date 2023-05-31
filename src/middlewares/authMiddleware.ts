@@ -7,7 +7,8 @@ import { UserRepository } from '../infra/repository/userRepository';
 import { JwtPayload } from 'jsonwebtoken';
 
 export const authenticate = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
-  const token = req.headers.authorization?.split(' ')[1];
+  const { authorization } = req.headers as { authorization: string };
+  const token = authorization.split(' ')[1];
   if (!token) {
     return next(new BadRequestError('No token provided'));
   }

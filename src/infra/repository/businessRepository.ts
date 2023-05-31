@@ -1,7 +1,7 @@
 // src/infra/repository/userRepository.ts
 
 import mongoose, { UpdateWriteOpResult } from 'mongoose';
-import { BadRequestError } from '../../helpers/error';
+import { BadRequestError, MongoError } from '../../helpers/error';
 import Business, { IBusiness } from '../db/mongoose/models/Business';
 
 export class BusinessRepository {
@@ -9,8 +9,8 @@ export class BusinessRepository {
     try {
       const newBusiness = await Business.create(business);
       return newBusiness as IBusiness;
-    } catch (err: any) {
-      throw new BadRequestError(err.message);
+    } catch (err) {
+      if (err instanceof MongoError) throw new BadRequestError(err.message);
     }
   }
 
@@ -19,25 +19,27 @@ export class BusinessRepository {
       const business = await Business.findOne({ _id });
       if (!business) throw new BadRequestError('Business does not exist');
       return business.toObject() as IBusiness;
-    } catch (err: any) {
-      throw new BadRequestError(err.message);
+    } catch (err) {
+      if (err instanceof MongoError) throw new BadRequestError(err.message);
     }
   }
-  static async findByUserId(userId: string): Promise<IBusiness[] | null> {
+  static async findByUserId(userId: string): Promise<IBusiness[] | undefined> {
     try {
       const businesses = await Business.find({ userId });
       if (!businesses) throw new BadRequestError('User does not exist');
       return businesses as IBusiness[];
-    } catch (err: any) {
-      throw new BadRequestError(err.message);
+    } catch (err) {
+      if (err instanceof MongoError) throw new BadRequestError(err.message);
     }
   }
   static async update(_id: string, data: Partial<IBusiness>): Promise<UpdateWriteOpResult | undefined> {
     try {
-      const business = (await this.findById(_id)) as IBusiness;
+      await this.findById(_id);
       return await Business.updateOne({ _id }, { $set: data });
-    } catch (err: any) {
-      //
+    } catch (err) {
+      if (err instanceof MongoError) {
+        //
+      }
     }
   }
   static async aggregateWithUser(_id: string): Promise<IBusiness | undefined> {
@@ -70,8 +72,8 @@ export class BusinessRepository {
       ]);
       if (!business) throw new BadRequestError('Business does not exist');
       return business as IBusiness;
-    } catch (err: any) {
-      throw new BadRequestError(err.message);
+    } catch (err) {
+      if (err instanceof MongoError) throw new BadRequestError(err.message);
     }
   }
 }

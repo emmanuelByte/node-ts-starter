@@ -1,13 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/middlewares/errorHandler.ts
 import { NextFunction, Request, Response } from 'express';
 import config from '../config/config';
 
 // Import custom error classes, e.g.
-import { BadRequestError, InternalServerError, NotFoundError, UnauthorizedError } from '../helpers/error';
+import { BadRequestError, CustomError, InternalServerError, NotFoundError, UnauthorizedError } from '../helpers/error';
 import Logger from '../core/Logger';
 const log = new Logger();
-const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+const errorHandler = (err: CustomError, req: Request, res: Response, next: NextFunction) => {
   if (res.headersSent) {
     return next(err);
   }
@@ -30,6 +29,7 @@ const errorHandler = (err: any, req: Request, res: Response, next: NextFunction)
         body: req.body,
         stack: err.stack,
       });
+      // TODO: FOR MULTER
       //   if (err.code === 'LIMIT_FILE_SIZE') {
       //     return res.status(400).json({
       //       success: false,

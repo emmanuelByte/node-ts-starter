@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from 'express';
 import { IUser } from '../infra/db/mongoose/models/User';
 import { sendResponse } from '../helpers/response';
@@ -14,7 +13,7 @@ class UserController {
         message: 'User registered successfully',
         data: user,
       });
-    } catch (error: any) {
+    } catch (error) {
       // console.log(error);
     }
   }
@@ -29,7 +28,7 @@ class UserController {
         message: 'User logged in successfully',
         data: { token, ...user, password: undefined },
       });
-    } catch (error: any) {
+    } catch (error) {
       // console.log(error);
     }
   }
@@ -103,7 +102,7 @@ class UserController {
         message: 'Registration completed successfully',
         data: business,
       });
-    } catch (error: any) {
+    } catch (error) {
       // console.log(error);
     }
   }
@@ -116,7 +115,7 @@ class UserController {
         message: 'Created Pin successfully',
         data: pin,
       });
-    } catch (error: any) {
+    } catch (error) {
       // console.log(error);
     }
   }
@@ -129,7 +128,7 @@ class UserController {
         message: 'Updated Pin successfully',
         data: pin,
       });
-    } catch (error: any) {
+    } catch (error) {
       // console.log(error);
     }
   }
@@ -142,7 +141,7 @@ class UserController {
         message: 'Verified Pin successful',
         data: pin,
       });
-    } catch (error: any) {
+    } catch (error) {
       // console.log(error);
     }
   }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/utils/Logger.ts
 import path from 'path';
 
@@ -34,7 +33,12 @@ const colours = {
     crimson: '\x1b[48m',
   },
 };
-
+interface Iargs {
+  url?: string;
+  method?: string;
+  body?: string;
+  stack?: string;
+}
 class Logger {
   private static _DEFAULT_SCOPE = 'app';
 
@@ -66,27 +70,27 @@ class Logger {
     return this;
   }
 
-  debug(message: string, ...args: any[]): void {
+  debug(message: string, ...args: Array<Iargs>): void {
     this.log('debug', message, args);
   }
 
-  info(message: string, ...args: any[]): void {
+  info(message: string, ...args: Array<Iargs>): void {
     this.log('info', message, args);
   }
 
-  warn(message: string, ...args: any[]): void {
+  warn(message: string, ...args: Array<Iargs>): void {
     this.log('warn', message, args);
   }
 
-  error(message: string, ...args: any[]): void {
+  error(message: string, ...args: Array<Iargs>): void {
     this.log('error', message, args);
   }
 
-  private log(level: string, message: string, args: any[]): void {
+  private log(level: string, message: string, args: Array<Iargs>): void {
     if (message) {
       let output = [`${this.formatScope()} ${message}`, args.length ? args : undefined, colours.reset].filter(
         (d) => !!d,
-      ) as any;
+      ) as Array<string>;
 
       if (output[0].includes('[app] ')) {
         output = [colours.fg.green, ...output];

@@ -1,7 +1,7 @@
 // src/infra/repository/userRepository.ts
 
 import mongoose, { UpdateWriteOpResult } from 'mongoose';
-import { BadRequestError } from '../../helpers/error';
+import { BadRequestError, MongoError } from '../../helpers/error';
 import Pin, { IPin } from '../db/mongoose/models/Pin';
 
 export class PinRepository {
@@ -9,8 +9,8 @@ export class PinRepository {
     try {
       const newPin = await Pin.create(pin);
       return newPin as IPin;
-    } catch (err: any) {
-      throw new BadRequestError(err.message);
+    } catch (err) {
+      if (err instanceof MongoError) throw new BadRequestError(err.message);
     }
   }
 
@@ -19,24 +19,24 @@ export class PinRepository {
       const pin = await Pin.findOne({ _id });
       if (!pin) throw new BadRequestError('Pin does not exist');
       return pin.toObject() as IPin;
-    } catch (err: any) {
-      throw new BadRequestError(err.message);
+    } catch (err) {
+      if (err instanceof MongoError) throw new BadRequestError(err.message);
     }
   }
-  static async findByUserId(userId: string): Promise<IPin | null> {
+  static async findByUserId(userId: string): Promise<IPin | undefined> {
     try {
       const pins = await Pin.findOne({ userId });
       if (!pins) throw new BadRequestError('User does not exist');
       return pins as IPin;
-    } catch (err: any) {
-      throw new BadRequestError(err.message);
+    } catch (err) {
+      if (err instanceof MongoError) throw new BadRequestError(err.message);
     }
   }
   static async update(_id: string, data: Partial<IPin>): Promise<UpdateWriteOpResult | undefined> {
     try {
       await this.findById(_id);
       return await Pin.updateOne({ _id }, { $set: data });
-    } catch (err: any) {
+    } catch (err) {
       //
     }
   }
@@ -70,8 +70,8 @@ export class PinRepository {
       ]);
       if (!pin) throw new BadRequestError('Pin does not exist');
       return pin as IPin;
-    } catch (err: any) {
-      throw new BadRequestError(err.message);
+    } catch (err) {
+      if (err instanceof MongoError) throw new BadRequestError(err.message);
     }
   }
 }

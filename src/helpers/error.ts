@@ -8,6 +8,14 @@ export class CustomError extends Error {
     this.statusCode = statusCode;
   }
 }
+export class MongoError extends Error {
+  code: number;
+
+  constructor(message: string, code: number) {
+    super(message);
+    this.code = code;
+  }
+}
 
 export class BadRequestError extends CustomError {
   constructor(message: string = ReasonPhrases.BAD_REQUEST) {
