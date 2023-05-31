@@ -1,16 +1,17 @@
-import mongoose from "mongoose";
-import config from "../../../../config/config";
+import mongoose from 'mongoose';
+import config from '../../../../config/config';
 
 export const connect = async (): Promise<void> => {
   try {
-    await mongoose.connect(config.db.url, {
+    const url = config.db.url as string;
+    await mongoose.connect(url, {
       // useNewUrlParser: true,
       // useUnifiedTopology: true,
       // useCreateIndex: true,
       // useFindAndModify: false,
     });
-    console.log("Connected to MongoDB".yellow.underline.bold);
-  } catch (error: any) {
+    console.log('Connected to MongoDB'.yellow.underline.bold);
+  } catch (error) {
     console.log(error);
     process.exit(1);
   }
