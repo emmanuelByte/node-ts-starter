@@ -16,7 +16,8 @@ export default class UserService {
     try {
       const userData = req.body as Pick<IUser, 'email' | 'password'>;
       const unHashPassword = userData.password as string;
-      const password = await bcrypt.hash(unHashPassword, 10);
+      const salt = await bcrypt.genSalt(10);
+      const password = await bcrypt.hash(unHashPassword, salt);
       return await UserRepository.create({ ...userData, password });
     } catch (err) {
       if (err instanceof CustomError) {
