@@ -29,18 +29,7 @@ const errorHandler = (err: CustomError, req: Request, res: Response, next: NextF
         body: req.body,
         stack: err.stack,
       });
-      // TODO: FOR MULTER
-      //   if (err.code === 'LIMIT_FILE_SIZE') {
-      //     return res.status(400).json({
-      //       success: false,
-      //       errors: [
-      //         {
-      //           code: 400,
-      //           message: 'File size is too large',
-      //         },
-      //       ],
-      //     });
-      //   }
+
       return res.status(500).json({
         success: false,
         errors: [

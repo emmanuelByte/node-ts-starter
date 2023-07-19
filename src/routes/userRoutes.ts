@@ -6,21 +6,16 @@ import userController from '../controllers/userController';
 const router = Router();
 // UnAuthenticated
 // POST ROUTES
-router.post('/register', userValidation.loginValidation, userController.register);
+router.post('/register', userValidation.registerValidation, userController.register);
 router.post('/login', userValidation.loginValidation, userController.login);
 router.post('/sendVerificationEmail', userValidation.verificationEmailValidation, userController.sendVerificationEmail);
+router.post('/checkEmail', userValidation.verificationEmailValidation, userController.checkEmail);
 router.post('/verifyEmail', userValidation.verifyEmailValidation, userController.verifyEmail);
 router.post('/sendForgotPassword', userValidation.verificationEmailValidation, userController.sendForgotPassword);
 router.post('/verifyForgotPassword', userValidation.verifyForgotEmailValidation, userController.verifyForgotPassword);
 
 // Protect the routes below with the authenticate middleware
 router.use(authenticate);
-// POST ROUTES
-router.post(
-  '/completeRegistration',
-  userValidation.completeRegistrationValidation,
-  userController.completeRegistration,
-);
 router.post('/createPin', userValidation.createPinValidation, userController.createPin);
 router.post('/updatePin', userValidation.updatePinValidation, userController.updatePin);
 router.post('/verifyPin', userValidation.createPinValidation, userController.verifyPin);

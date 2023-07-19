@@ -3,18 +3,35 @@ import { IUser } from '../infra/db/mongoose/models/User';
 import { sendResponse } from '../helpers/response';
 import UserService from '../services/userService';
 import { StatusCodes } from 'http-status-codes';
+import { BadRequestError, CustomError } from '../helpers/error';
 class UserController {
-  static async register(req: Request, res: Response, next: NextFunction): Promise<Response | undefined> {
+  static async checkEmail(req: Request, res: Response, next: NextFunction): Promise<Response | undefined> {
     try {
-      const user = await UserService.registerUser(req, res, next);
+      const service = await UserService.checkEmail(req, res, next);
       return sendResponse({
         res,
-        statusCode: StatusCodes.CREATED,
-        message: 'User registered successfully',
-        data: user,
+        statusCode: StatusCodes.OK,
+        message: 'email checked successfully',
+        ...service,
       });
     } catch (error) {
       // console.log(error);
+    }
+  }
+  static async register(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+    try {
+      const user = await UserService.registerUser(req, res, next);
+      if (user)
+        return sendResponse({
+          res,
+          statusCode: StatusCodes.CREATED,
+          message: 'User registered successfully',
+          data: user,
+        });
+    } catch (error) {
+      if (error instanceof CustomError) {
+        return next(new BadRequestError(error.message));
+      }
     }
   }
 
@@ -93,19 +110,7 @@ class UserController {
       // console.log(error);
     }
   }
-  static async completeRegistration(req: Request, res: Response, next: NextFunction): Promise<Response | undefined> {
-    try {
-      const business = await UserService.completeRegistration(req, res, next);
-      return sendResponse({
-        res,
-        statusCode: StatusCodes.CREATED,
-        message: 'Registration completed successfully',
-        data: business,
-      });
-    } catch (error) {
-      // console.log(error);
-    }
-  }
+
   static async createPin(req: Request, res: Response, next: NextFunction): Promise<Response | undefined> {
     try {
       const pin = await UserService.createPin(req, res, next);

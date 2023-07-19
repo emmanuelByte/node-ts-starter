@@ -1,21 +1,21 @@
 // src/infra/repository/userRepository.ts
 
 import { UpdateWriteOpResult } from 'mongoose';
-import { BadRequestError, MongoError } from '../../helpers/error';
+import { BadRequestError, CustomError, MongoError } from '../../helpers/error';
 import UserModel, { IUser } from '../db/mongoose/models/User';
+import { NextFunction } from 'express';
 
 export class UserRepository {
-  static async create(user: Pick<IUser, 'email' | 'password'>): Promise<IUser | undefined> {
+  static async create(user: IUser, next: NextFunction): Promise<IUser | void> {
     try {
+      if (await UserModel.findOne({ email: user.email })) {
+        throw new BadRequestError('User already exist');
+      }
       const newUser = await UserModel.create(user);
       return newUser.toObject() as IUser;
     } catch (err) {
-      if (err instanceof MongoError) {
-        let message;
-        if (err.code === 11000) message = 'User already exist';
-        //   if (err.name==="ValidationError") message=''
-        //   console.log(err.name);
-        throw new BadRequestError(message || err.message);
+      if (err instanceof CustomError) {
+        throw next(new BadRequestError(err.message));
       }
     }
   }

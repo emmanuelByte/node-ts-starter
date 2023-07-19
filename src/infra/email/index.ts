@@ -2,36 +2,60 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import nodemailer from 'nodemailer';
 import config from '../../config/config';
+import fs from 'fs';
+import Handlebars from 'handlebars';
 
-async function sendEmail() {
-  const email = config.email as unknown as {
-    SMTP_HOST: string;
-    SMTP_PORT: number;
-    SMTP_USERNAME: string;
-    SMTP_PASSWORD: string;
+const email = config.email as unknown as {
+  SMTP_HOST: string;
+  SMTP_PORT: number;
+  SMTP_USERNAME: string;
+  SMTP_PASSWORD: string;
+};
+
+// Create a transport object with your Google account credentials
+const transporter = nodemailer.createTransport({
+  host: email.SMTP_HOST,
+  port: email.SMTP_PORT,
+  secure: true,
+  auth: {
+    user: email.SMTP_USERNAME,
+    pass: email.SMTP_PASSWORD,
+  },
+});
+type emailTypes = {
+  to: string;
+  data: {
+    type: 'verify' | 'reset';
+    code: string;
   };
-  const SMTP_HOST = email.SMTP_HOST;
-  const SMTP_PORT = email.SMTP_PORT;
-  const SMTP_USERNAME = email.SMTP_USERNAME;
-  const SMTP_PASSWORD = email.SMTP_PASSWORD;
-
-  // Create a transport object with your Google account credentials
-  const transporter = nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: SMTP_PORT,
-    secure: true,
-    auth: {
-      user: SMTP_USERNAME,
-      pass: SMTP_PASSWORD,
-    },
-  });
+};
+function getTemplateHtml(templateName: string, data: { code: string }) {
+  const templatePath = `./templates/${templateName}.hbs`;
+  const rawTemplate = fs.readFileSync(templatePath, 'utf8');
+  const template = Handlebars.compile(rawTemplate);
+  const html = template({ ...data, year: new Date().getFullYear() });
+  return html;
+}
+async function sendEmail(emailOptions: emailTypes) {
+  // Determine the template and subject based on the email type
+  let templateName: string;
+  let subject: string;
+  if (emailOptions.data.type === 'verify') {
+    templateName = 'verifyEmail';
+    subject = 'Verify your email';
+  } else {
+    templateName = 'resetPassword';
+    subject = 'Reset your password';
+  }
+  // Generate the email HTML
+  const html = getTemplateHtml(templateName, { code: emailOptions.data.code });
 
   // Set up the email options
   const mailOptions = {
-    from: SMTP_USERNAME,
-    to: 'euniceakinmarin16@gmail.com',
-    subject: 'Love Email',
-    text: `Hi Eunice, I love you so much.`,
+    from: email.SMTP_USERNAME,
+    to: emailOptions.to,
+    subject,
+    html,
   };
 
   // Send the email

@@ -11,7 +11,7 @@ export default {
     expiresIn: process.env.JWT_EXPIRES_IN,
   },
   app: {
-    port: process.env.PORT,
+    port: process.env.PORT || 3000,
     env: process.env.NODE_ENV,
   },
   email: {

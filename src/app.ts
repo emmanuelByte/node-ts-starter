@@ -1,25 +1,19 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Application } from 'express';
 import 'reflect-metadata';
 import { json, urlencoded } from 'body-parser';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
 import userRoutes from './routes/userRoutes';
-import listEndPoints from 'list_end_points';
-import { CustomError } from './helpers/error';
-import { sendResponse } from './helpers/response';
-import { connect } from './infra/db/mongoose/models';
 
 import notFoundHandler from './middlewares/notFoundHandler';
+import errorHandler from './middlewares/errorHandler';
 
 const app: Application = express();
 
-// Connect to MongoDB
-connect();
-
 app.use(json());
 app.use(urlencoded({ extended: true }));
-app.use(morgan('combined'));
+app.use(morgan('dev'));
 app.use(helmet());
 app.use(cors());
 
@@ -27,22 +21,6 @@ app.use(cors());
 app.use('/v1/users', userRoutes);
 
 app.use(notFoundHandler);
+app.use(errorHandler);
 
-// Error handling middleware
-app.use((err: Error, req: Request, res: Response) => {
-  if (err instanceof CustomError) {
-    return sendResponse({
-      res,
-      statusCode: err.statusCode,
-      message: err.message,
-    });
-  }
-  console.error(err.stack);
-  return sendResponse({
-    res,
-    statusCode: 500,
-    message: 'Something went wrong',
-  });
-});
-listEndPoints(app);
 export default app;
