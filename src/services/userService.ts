@@ -7,7 +7,6 @@ import { NextFunction, Request, Response } from 'express';
 import { UserRepository } from '../infra/repository/userRepository';
 import { generateOTP } from '../helpers/helpers';
 
-import { PinRepository } from '../infra/repository/pinRepository';
 import sendEmail from '../infra/email';
 import { responseType } from '../helpers/response';
 
@@ -123,63 +122,6 @@ export default class UserService {
     }
   }
 
-  static async createPin(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<Pick<responseType, 'success'> | undefined> {
-    try {
-      const user = req.user as IUser;
-      const { pin } = req.body;
-      if (user.pin) {
-        throw next(new BadRequestError('PIN code already created'));
-      }
-      const hashCode = await bcrypt.hash(pin, 10);
-      const data = { pin: hashCode, userId: user._id };
-      return await PinRepository.create(data);
-    } catch (err) {
-      if (err instanceof CustomError) throw next(new BadRequestError(err.message));
-    }
-  }
-  static async updatePin(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<Pick<responseType, 'success'> | undefined> {
-    try {
-      const user = req.user as IUser;
-      const { pin, password } = req.body;
-      if (!user.pin) {
-        throw next(new BadRequestError('PIN code not yet created'));
-      }
-      const isPasswordValid = await bcrypt.compare(password, user.password as string);
-      if (!isPasswordValid) throw new BadRequestError('Invalid Password');
-      const hashCode = await bcrypt.hash(pin, 10);
-
-      const data = { pin: hashCode, userId: user._id };
-      return await PinRepository.create(data);
-    } catch (err) {
-      if (err instanceof CustomError) throw next(new BadRequestError(err.message));
-    }
-  }
-  static async verifyPin(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<Pick<responseType, 'success'> | undefined> {
-    try {
-      const user = req.user as IUser;
-      const { pin } = req.body;
-      if (!user.pin) {
-        throw next(new BadRequestError('PIN code not yet created'));
-      }
-      const isCodeValid = await bcrypt.compare(pin, user.pin);
-      if (!isCodeValid) throw new BadRequestError('Invalid Code');
-      return { success: true };
-    } catch (err) {
-      if (err instanceof CustomError) throw next(new BadRequestError(err.message));
-    }
-  }
   static async getProfile(req: Request, res: Response, next: NextFunction): Promise<IUser | undefined> {
     try {
       const user = req.user as IUser;

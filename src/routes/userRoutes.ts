@@ -16,12 +16,7 @@ router.post('/verifyForgotPassword', userValidation.verifyForgotEmailValidation,
 
 // Protect the routes below with the authenticate middleware
 router.use(authenticate);
-router.post('/createPin', userValidation.createPinValidation, userController.createPin);
-router.post('/updatePin', userValidation.updatePinValidation, userController.updatePin);
-router.post('/verifyPin', userValidation.createPinValidation, userController.verifyPin);
 // GET ROUTES
 router.get('/profile', userController.getProfile);
-
-// Add other protected routes here, e.g., payment-related routes
 
 export default router;

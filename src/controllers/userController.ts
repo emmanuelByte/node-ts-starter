@@ -110,45 +110,5 @@ class UserController {
       // console.log(error);
     }
   }
-
-  static async createPin(req: Request, res: Response, next: NextFunction): Promise<Response | undefined> {
-    try {
-      const pin = await UserService.createPin(req, res, next);
-      return sendResponse({
-        res,
-        statusCode: StatusCodes.CREATED,
-        message: 'Created Pin successfully',
-        data: pin,
-      });
-    } catch (error) {
-      // console.log(error);
-    }
-  }
-  static async updatePin(req: Request, res: Response, next: NextFunction): Promise<Response | undefined> {
-    try {
-      const pin = await UserService.updatePin(req, res, next);
-      return sendResponse({
-        res,
-        statusCode: StatusCodes.CREATED,
-        message: 'Updated Pin successfully',
-        data: pin,
-      });
-    } catch (error) {
-      // console.log(error);
-    }
-  }
-  static async verifyPin(req: Request, res: Response, next: NextFunction): Promise<Response | undefined> {
-    try {
-      const pin = await UserService.verifyPin(req, res, next);
-      return sendResponse({
-        res,
-        statusCode: StatusCodes.CREATED,
-        message: 'Verified Pin successful',
-        data: pin,
-      });
-    } catch (error) {
-      // console.log(error);
-    }
-  }
 }
 export default UserController;
